@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String
+  password String
+  role Role @default(USER)
+  logs Log[]
+  items Item[]
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model File {
+  id Int @id @default(autoincrement())
+  filename String
+  size Int
+  type String
+  public Boolean @default(true)
+  src String
+  itemId Int
+  item Item @relation(fields: [itemId], references: [id])
+}
+
+model ItemType {
+  id Int @id @default(autoincrement())
+  title String
+  items Item[]
+}
+
+model Item {
+  id Int @id @default(autoincrement())
+  title String
+  properties Json
+  type ItemType @relation(fields: [typeId], references: [id])
+  typeId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  createdAt DateTime @default(now())
+  images File[]
+}
+
+model Log {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [id], references: [id])
+  user_id Int 
+  action String
+  createdAt DateTime @default(now())
+}
+
+model System {
+  id Int @id @default(0)
+  createdAt DateTime @default(now())
+}
