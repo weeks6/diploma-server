@@ -3,7 +3,7 @@ ALTER TABLE "File" ALTER COLUMN "public" SET DEFAULT true;
 
 -- AlterTable
 ALTER TABLE "Item" ADD COLUMN     "guid" TEXT NOT NULL DEFAULT E'',
-ADD COLUMN     "roomId" INTEGER NOT NULL DEFAULT 0;
+ADD COLUMN     "roomId" INTEGER;
 
 -- CreateTable
 CREATE TABLE "Room" (
