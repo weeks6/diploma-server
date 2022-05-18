@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABSE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -34,6 +34,12 @@ model File {
   item Item @relation(fields: [itemId], references: [id])
 }
 
+model Room {
+  id Int @id @default(autoincrement())
+  title String
+  Items Item[]
+}
+
 model ItemType {
   id Int @id @default(autoincrement())
   title String
@@ -50,6 +56,9 @@ model Item {
   userId Int
   createdAt DateTime @default(now())
   images File[]
+  guid String?
+  roomId Int? 
+  room Room? @relation(fields: [roomId], references: [id])
 }
 
 model Log {
