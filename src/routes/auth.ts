@@ -1,11 +1,9 @@
-import { loginUser, users } from './../controllers/user.controller';
+import { loginUser } from './../controllers/user.controller';
 import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import { createUser } from '../controllers/user.controller';
 
 const router = Router();
-
-router.get('/users', users);
 
 router.post(
   '/login',

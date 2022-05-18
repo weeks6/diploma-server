@@ -3,7 +3,8 @@ import { Router } from 'express';
 import {
   createUser,
   deleteUser,
-  profile
+  profile,
+  users
 } from '../controllers/user.controller';
 import routeGuard from '../utils/routeGuard';
 
@@ -23,8 +24,10 @@ router.post(
   createUser
 );
 
+router.get('/list', users);
+
 router.get('/profile', profile);
 
-router.delete('/user', deleteUser);
+router.delete('/delete', deleteUser);
 
 export default router;

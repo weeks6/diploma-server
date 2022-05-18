@@ -12,8 +12,10 @@ import {
 
 import multer from 'multer';
 import path from 'path';
+import routeGuard from '../utils/routeGuard';
 
 const router = Router();
+router.use(routeGuard);
 
 const storage = multer.diskStorage({
   destination(req, file, callback) {
