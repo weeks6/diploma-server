@@ -5,19 +5,22 @@
   "scripts": {
     "watch": "nodemon --watch './**/*.{ts,graphql}' --exec node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts",
     "dev": "tsc-watch --onSuccess \"npm run watch\"",
-    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts"
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts",
+    "build": "rimraf ./build && tsc"
   },
   "dependencies": {
     "@prisma/client": "^3.10.0",
     "bcrypt": "^5.0.1",
     "celebrate": "^15.0.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "4.17.3",
     "helmet": "^5.0.2",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

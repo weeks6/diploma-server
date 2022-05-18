@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { errors } from 'celebrate';
 import express from 'express';
@@ -13,9 +14,14 @@ import itemRouter from './routes/item';
 const prisma = new PrismaClient();
 const app = express();
 
+app.use(express.static('storage'));
 app.use(morgan('combined'));
 app.use(cors());
-app.use(helmet());
+app.use(helmet(
+{
+  crossOriginResourcePolicy: false
+}
+));
 app.use(express.json());
 
 app.use(systemRouter);
