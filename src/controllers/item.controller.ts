@@ -99,6 +99,11 @@ export const createItem = async (req: Request, res: Response) => {
             id: Number(req.body.type)
           }
         },
+        room: {
+          connect: {
+            id: Number(req.body.room)
+          }
+        },
         user: {
           connect: {
             id: Number(req.userId)
