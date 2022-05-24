@@ -62,6 +62,8 @@ export const deleteItemType = async (req: Request, res: Response) => {
 
     return res.status(200).json(deletedItemType);
   } catch (error) {
+    console.log({ error });
+
     return res
       .status(400)
       .json({ message: 'Что-то пошло не так', status: 'error', error });
@@ -74,7 +76,8 @@ export const itemList = async (req: Request, res: Response) => {
       include: {
         images: true,
         type: true,
-        user: true
+        user: true,
+        room: true
       }
     });
 
@@ -90,26 +93,32 @@ export const createItem = async (req: Request, res: Response) => {
   try {
     let files: any = [];
 
-    const item = await prisma.item.create({
-      data: {
-        title: req.body.title,
-        properties: req.body.properties,
-        type: {
-          connect: {
-            id: Number(req.body.type)
-          }
-        },
-        room: {
-          connect: {
-            id: Number(req.body.room)
-          }
-        },
-        user: {
-          connect: {
-            id: Number(req.userId)
-          }
+    const data: any = {
+      title: req.body.title,
+      guid: req.body.guid,
+      properties: req.body.properties,
+      type: {
+        connect: {
+          id: Number(req.body.type)
+        }
+      },
+      user: {
+        connect: {
+          id: Number(req.userId)
         }
       }
+    };
+
+    if (req.body.room) {
+      data.room = {
+        connect: {
+          id: Number(req.body.room)
+        }
+      };
+    }
+
+    const item = await prisma.item.create({
+      data
     });
 
     if (req.files?.length) {
@@ -143,7 +152,9 @@ export const getItem = async (req: Request, res: Response) => {
       },
       include: {
         images: true,
-        type: true
+        type: true,
+        user: true,
+        room: true
       }
     });
 
@@ -156,6 +167,8 @@ export const getItem = async (req: Request, res: Response) => {
 };
 
 export const deleteItem = async (req: Request, res: Response) => {
+  console.log({ body: req.body });
+
   try {
     const files = await prisma.file.findMany({
       where: {
@@ -164,7 +177,7 @@ export const deleteItem = async (req: Request, res: Response) => {
     });
 
     files.forEach(async (file) => {
-      await rm(path.join(process.cwd(), file.src));
+      await rm(path.join(process.cwd(), file.src), { force: true });
     });
 
     const deleteFiles = prisma.file.deleteMany({
@@ -183,6 +196,8 @@ export const deleteItem = async (req: Request, res: Response) => {
 
     return res.status(200).json({ transaction });
   } catch (error) {
+    console.log({ error });
+
     return res
       .status(400)
       .json({ message: 'Что-то пошло не так', status: 'error', error });

@@ -50,7 +50,7 @@ model Item {
   id Int @id @default(autoincrement())
   title String
   properties Json
-  type ItemType @relation(fields: [typeId], references: [id])
+  type ItemType @relation(fields: [typeId], references: [id], onDelete: Cascade) 
   typeId Int
   user User @relation(fields: [userId], references: [id])
   userId Int
