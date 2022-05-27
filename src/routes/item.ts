@@ -7,7 +7,8 @@ import {
   createItem,
   getItem,
   itemList,
-  deleteItem
+  deleteItem,
+  editItem
 } from '../controllers/item.controller';
 
 import multer from 'multer';
@@ -37,6 +38,6 @@ router.get('/items', itemList);
 router.post('/items', getItem);
 router.put('/items', upload.array('photos'), createItem);
 router.delete('/items', deleteItem);
-// router.patch('/item', updateItem);
+router.patch('/items', upload.array('photos'), editItem);
 
 export default router;

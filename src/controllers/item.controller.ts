@@ -203,3 +203,32 @@ export const deleteItem = async (req: Request, res: Response) => {
       .json({ message: 'Что-то пошло не так', status: 'error', error });
   }
 };
+
+export const editItem = async (req: Request, res: Response) => {
+  const data: any = {
+    title: req.body.title,
+    typeId: Number(req.body.type),
+    guid: req.body.guid,
+    properties: req.body.properties
+  };
+
+  if (req.body.room) {
+    data.roomId = Number(req.body.id);
+  }
+
+  try {
+    const updatedItem = await prisma.item.update({
+      where: {
+        id: Number(req.body.id)
+      },
+      data
+    });
+
+    return res.status(200).json(updatedItem);
+  } catch (error) {
+    console.log({ error });
+    return res
+      .status(400)
+      .json({ message: 'Что-то пошло не так', status: 'error', error });
+  }
+};
