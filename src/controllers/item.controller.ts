@@ -176,25 +176,22 @@ export const deleteItem = async (req: Request, res: Response) => {
       }
     });
 
+    console.log({ files });
+
     files.forEach(async (file) => {
-      await rm(path.join(process.cwd(), file.src), { force: true });
+      const filePath = path.join(process.cwd(), file.src);
+      console.log({ fileSrc: file.src, filePath });
+
+      await rm(filePath, { force: true });
     });
 
-    const deleteFiles = prisma.file.deleteMany({
-      where: {
-        itemId: req.body.id
-      }
-    });
-
-    const item = prisma.item.delete({
+    const item = await prisma.item.delete({
       where: {
         id: req.body.id
       }
     });
 
-    const transaction = await prisma.$transaction([deleteFiles, item]);
-
-    return res.status(200).json({ transaction });
+    return res.status(200).json(item);
   } catch (error) {
     console.log({ error });
 
@@ -207,13 +204,21 @@ export const deleteItem = async (req: Request, res: Response) => {
 export const editItem = async (req: Request, res: Response) => {
   const data: any = {
     title: req.body.title,
-    typeId: Number(req.body.type),
+    type: {
+      connect: {
+        id: Number(req.body.type)
+      }
+    },
     guid: req.body.guid,
     properties: req.body.properties
   };
 
   if (req.body.room) {
-    data.roomId = Number(req.body.id);
+    data.room = {
+      connect: {
+        id: Number(req.body.room)
+      }
+    };
   }
 
   try {
