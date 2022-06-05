@@ -229,6 +229,44 @@ export const editItem = async (req: Request, res: Response) => {
       data
     });
 
+    console.log({ oldPhotos: req.body.photos_old });
+
+    if (req.body.photos_old?.length) {
+      const oldPhotos = await prisma.file.findMany({
+        where: {
+          itemId: Number(req.body.id)
+        }
+      });
+
+      oldPhotos.forEach(async (file) => {
+        if (!req.body.photos_old?.includes(`${file.id}`)) {
+          const deleteFile = await prisma.file.delete({
+            where: {
+              id: file.id
+            }
+          });
+
+          console.log({ deleteFile });
+
+          const filePath = path.join(process.cwd(), file.src);
+          await rm(filePath, { force: true });
+        }
+      });
+
+      const createdFiles = await prisma.file.createMany({
+        data: (req.files as Express.Multer.File[]).map((file) => ({
+          filename: file.filename,
+          public: true,
+          size: file.size,
+          src: `/storage/${file.filename}`,
+          type: file.mimetype,
+          itemId: Number(req.body.id)
+        }))
+      });
+
+      console.log({ createdFiles });
+    }
+
     return res.status(200).json(updatedItem);
   } catch (error) {
     console.log({ error });
