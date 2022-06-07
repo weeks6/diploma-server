@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { rm } from 'fs/promises';
 import path from 'path';
@@ -72,14 +72,28 @@ export const deleteItemType = async (req: Request, res: Response) => {
 
 export const itemList = async (req: Request, res: Response) => {
   try {
-    const items = await prisma.item.findMany({
+    const { room, type } = req.query;
+    console.log({ room, type });
+
+    const options: Prisma.ItemFindManyArgs = {
       include: {
         images: true,
         type: true,
         user: true,
         room: true
       }
-    });
+    };
+
+    if (room?.length) {
+      const roomIds = (room as string).split(',').map((v) => Number(v));
+      options.where = {
+        room: {
+          id: { in: roomIds }
+        }
+      };
+    }
+
+    const items = await prisma.item.findMany(options);
 
     return res.status(200).json(items);
   } catch (error) {
