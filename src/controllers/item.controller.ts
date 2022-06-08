@@ -87,8 +87,19 @@ export const itemList = async (req: Request, res: Response) => {
     if (room?.length) {
       const roomIds = (room as string).split(',').map((v) => Number(v));
       options.where = {
+        ...(options.where || {}),
         room: {
           id: { in: roomIds }
+        }
+      };
+    }
+
+    if (type?.length) {
+      const typesIds = (type as string).split(',').map((v) => Number(v));
+      options.where = {
+        ...(options.where || {}),
+        type: {
+          id: { in: typesIds }
         }
       };
     }
