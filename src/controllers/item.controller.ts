@@ -80,7 +80,12 @@ export const itemList = async (req: Request, res: Response) => {
         images: true,
         type: true,
         user: true,
-        room: true
+        room: true,
+        movementHistory: {
+          include: {
+            room: true
+          }
+        }
       }
     };
 
@@ -121,7 +126,7 @@ export const createItem = async (req: Request, res: Response) => {
     const data: any = {
       title: req.body.title,
       guid: req.body.guid,
-      properties: req.body.properties,
+      properties: req.body.properties ? req.body.properties : '[]',
       type: {
         connect: {
           id: Number(req.body.type)
@@ -145,6 +150,23 @@ export const createItem = async (req: Request, res: Response) => {
     const item = await prisma.item.create({
       data
     });
+
+    if (req.body.room) {
+      await prisma.movementHistory.create({
+        data: {
+          item: {
+            connect: {
+              id: item.id
+            }
+          },
+          room: {
+            connect: {
+              id: Number(req.body.room)
+            }
+          }
+        }
+      });
+    }
 
     if (req.files?.length) {
       files = await prisma.file.createMany({
@@ -179,7 +201,12 @@ export const getItem = async (req: Request, res: Response) => {
         images: true,
         type: true,
         user: true,
-        room: true
+        room: true,
+        movementHistory: {
+          include: {
+            room: true
+          }
+        }
       }
     });
 
@@ -208,6 +235,12 @@ export const deleteItem = async (req: Request, res: Response) => {
       console.log({ fileSrc: file.src, filePath });
 
       await rm(filePath, { force: true });
+    });
+
+    await prisma.movementHistory.deleteMany({
+      where: {
+        itemId: Number(req.body.id)
+      }
     });
 
     const item = await prisma.item.delete({
@@ -247,6 +280,29 @@ export const editItem = async (req: Request, res: Response) => {
   }
 
   try {
+    const item = await prisma.item.findFirst({
+      where: {
+        id: Number(req.body.id)
+      }
+    });
+
+    if (item && item.roomId !== Number(req.body.room)) {
+      await prisma.movementHistory.create({
+        data: {
+          item: {
+            connect: {
+              id: item.id
+            }
+          },
+          room: {
+            connect: {
+              id: Number(req.body.room)
+            }
+          }
+        }
+      });
+    }
+
     const updatedItem = await prisma.item.update({
       where: {
         id: Number(req.body.id)

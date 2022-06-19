@@ -38,6 +38,7 @@ model Room {
   id Int @id @default(autoincrement())
   title String
   Items Item[]
+  movementHistory MovementHistory[]
 }
 
 model ItemType {
@@ -59,6 +60,7 @@ model Item {
   guid String?
   roomId Int? 
   room Room? @relation(fields: [roomId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  movementHistory MovementHistory[]
 }
 
 model Log {
@@ -72,4 +74,13 @@ model Log {
 model System {
   id Int @id @default(0)
   createdAt DateTime @default(now())
+}
+
+model MovementHistory {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  roomId Int
+  room Room @relation(fields: [roomId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  itemId Int
+  item Item @relation(fields: [itemId], references: [id], onUpdate: Cascade, onDelete: SetNull)
 }
