@@ -4,7 +4,8 @@ import {
   createUser,
   deleteUser,
   profile,
-  users
+  users,
+  setUserRole
 } from '../controllers/user.controller';
 import routeGuard from '../utils/routeGuard';
 
@@ -29,5 +30,7 @@ router.get('/list', users);
 router.get('/profile', profile);
 
 router.delete('/delete', deleteUser);
+
+router.post('/makeAdmin', setUserRole);
 
 export default router;
